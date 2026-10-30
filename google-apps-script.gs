@@ -2,9 +2,12 @@
  * מקבל אישורי הגעה ושירים מהאתר וכותב אותם ל-Google Sheet.
  * הוראות התקנה: README.md
  */
+// The ID from the sheet's address: docs.google.com/spreadsheets/d/<ID>/edit
+const SHEET_ID = '1MrwCC4VTErPzKDIwol8DQIWmFXPhWOXWBIWUyneysNo';
+
 function doPost(e) {
   const data = JSON.parse(e.postData.contents);
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const ss = SpreadsheetApp.openById(SHEET_ID);
   const lock = LockService.getScriptLock();
   lock.waitLock(10000);
   try {
@@ -21,6 +24,13 @@ function doPost(e) {
   }
   return ContentService.createTextOutput(JSON.stringify({ ok: true }))
     .setMimeType(ContentService.MimeType.JSON);
+}
+
+// Run once from the editor: approves access and creates both tabs.
+function setup() {
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  sheet_(ss, 'אישורי הגעה', ['זמן', 'שם', 'טלפון', 'מגיעים', 'כמות', 'הערות']);
+  sheet_(ss, 'שירים', ['זמן', 'שיר', 'אמן']);
 }
 
 function sheet_(ss, name, headers) {
