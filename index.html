@@ -239,6 +239,10 @@ button{font:inherit}
       </div>
     </section>
 
+    <section class="reveal" aria-label="הסרטון שלנו" style="width:100%;margin-top:40px;border-radius:28px;overflow:hidden;background:#000;box-shadow:0 20px 50px -30px rgba(43,58,96,.35)">
+      <video id="film" src="assets/video.mp4" poster="assets/video-poster.jpg" controls playsinline preload="metadata" style="display:block;width:100%;aspect-ratio:16/9;background:#000"></video>
+    </section>
+
     <section id="playlist" class="reveal" aria-label="שיר לפלייליסט" style="width:100%;margin-top:40px;padding:36px 22px;border-radius:28px;background:var(--ink);color:#fff;text-align:right">
       <div style="display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center">
         <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
@@ -524,6 +528,10 @@ const WEDDING = new Date('2026-12-11T11:30:00+02:00');
     setPlaying(false);
   }
   $('music').addEventListener('click', () => (playing ? stopMusic() : startMusic()));
+  // The film has its own sound, so the background music pauses while it plays.
+  let resumeAfterFilm = false;
+  $('film').addEventListener('play', () => { resumeAfterFilm = playing; if (playing) stopMusic(); });
+  $('film').addEventListener('pause', () => { if (resumeAfterFilm) startMusic(); resumeAfterFilm = false; });
   document.addEventListener('visibilitychange', () => {
     if (!synth || !playing) return;
     if (document.hidden) synth.ctx.suspend(); else synth.ctx.resume();
