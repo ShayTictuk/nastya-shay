@@ -100,6 +100,10 @@ button{font:inherit}
 .pill span{display:flex;align-items:center;justify-content:center;min-height:52px;border-radius:14px;border:1.5px solid var(--ink);background:#fff;color:var(--ink);font-size:17px;transition:background-color .2s,color .2s}
 .pill input:checked + span{background:var(--ink);color:#fff}
 .pill input:focus-visible + span{box-shadow:0 0 0 3px rgba(63,83,131,.3)}
+.film-play{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;border:0;padding:0;background:rgba(43,58,96,.18);cursor:pointer;font:inherit}
+.film-play .disc{width:96px;height:96px;border-radius:50%;background:var(--ink);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 8px rgba(255,255,255,.75),0 16px 40px -10px rgba(43,58,96,.7);transition:transform .2s}
+.film-play .lbl{padding:8px 18px;border-radius:20px;background:#fff;color:var(--ink);font-size:17px;font-weight:700;box-shadow:0 8px 24px -10px rgba(43,58,96,.5)}
+.film-play:hover .disc,.film-play:focus-visible .disc{transform:scale(1.06)}
 .round{width:44px;height:44px;border-radius:22px;border:1.5px solid var(--ink);background:#fff;color:var(--ink);font-size:22px}
 .card-time{padding:14px 8px;border-radius:16px;background:#fff;box-shadow:0 6px 20px -12px rgba(43,58,96,.3)}
 .cd{padding:16px 4px 12px;border-radius:18px;background:#fff;border:1px solid #ECE6EA}
@@ -240,7 +244,13 @@ button{font:inherit}
     </section>
 
     <section class="reveal" aria-label="הסרטון שלנו" style="width:100%;margin-top:40px;border-radius:28px;overflow:hidden;background:#000;box-shadow:0 20px 50px -30px rgba(43,58,96,.35)">
-      <video id="film" src="assets/video.mp4?v=2" poster="assets/video-poster.jpg?v=2" controls playsinline preload="metadata" style="display:block;width:100%;aspect-ratio:16/9;background:#000"></video>
+      <div style="position:relative">
+        <video id="film" src="assets/video.mp4?v=2" poster="assets/video-poster.jpg?v=2" playsinline preload="metadata" style="display:block;width:100%;aspect-ratio:16/9;background:#000"></video>
+        <button type="button" id="film-play" class="film-play" aria-label="הפעלת הסרטון">
+          <span class="disc"><svg width="40" height="40" viewBox="0 0 24 24" aria-hidden="true" style="margin-left:6px"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z" fill="#fff"/></svg></span>
+          <span class="lbl">צפו בסרטון שלנו 🎬</span>
+        </button>
+      </div>
     </section>
 
     <section id="playlist" class="reveal" aria-label="שיר לפלייליסט" style="width:100%;margin-top:40px;padding:36px 22px;border-radius:28px;background:var(--ink);color:#fff;text-align:right">
@@ -532,6 +542,9 @@ const WEDDING = new Date('2026-12-11T11:30:00+02:00');
   let resumeAfterFilm = false;
   $('film').addEventListener('play', () => { resumeAfterFilm = playing; if (playing) stopMusic(); });
   $('film').addEventListener('pause', () => { if (resumeAfterFilm) startMusic(); resumeAfterFilm = false; });
+  $('film-play').addEventListener('click', () => { $('film').controls = true; $('film').play(); });
+  $('film').addEventListener('play', () => $('film-play').classList.add('hidden'));
+  $('film').addEventListener('ended', () => { $('film').controls = false; $('film-play').classList.remove('hidden'); });
   document.addEventListener('visibilitychange', () => {
     if (!synth || !playing) return;
     if (document.hidden) synth.ctx.suspend(); else synth.ctx.resume();
